@@ -1,0 +1,34 @@
+version: "2"
+services:
+  frontend:
+    container_name: frontend
+    restart: always
+    build: .
+    depends_on:
+        - backend
+    ports:
+      - "5005:5005"
+    environment:
+      - "SKIP_PREFLIGHT_CHECK=true"
+      - "PORT=5005"
+      - "BPORT=3001"
+  backend:
+    container_name: backend
+    restart: always
+    build: ../backend/
+    ports:
+      - "3001:3000"
+    depends_on:
+        - mongo
+    links:
+      - mongo
+    environment:
+      - "DB_HOST=mongo"
+      - "PORT=3000"
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
